@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>To-Do List</title>
+</head>
+<body>
+
+    <h1>My To-Do List</h1>
+    <input type="text" id="taskInput" placeholder="Enter a new task...">
+    <button id="addBtn">Add Task</button>
+    <ul id="taskList"></ul>
+
+<script>
+    // Load tasks from local storage when the page opens
+    window.onload = function() {
+        var savedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        savedTasks.forEach(function(task) {
+            createTaskElement(task);
+        });
+    };
+
+    function saveTasks() {
+        var listItems = document.querySelectorAll('#taskList li span');
+        var tasks = [];
+        listItems.forEach(function(item) {
+            tasks.push(item.textContent);
+        });
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+
+    function createTaskElement(text) {
+        var list = document.getElementById('taskList');
+        var li = document.createElement('li');
+        
+        var taskText = document.createElement('span');
+        taskText.textContent = text;
+        li.appendChild(taskText);
+        
+        var editBtn = document.createElement('button');
+        editBtn.textContent = 'Edit';
+        editBtn.onclick = function() {
+            var newText = prompt('Edit your task:', taskText.textContent);
+            if (newText !== null && newText.trim() !== '') {
+                taskText.textContent = newText;
+                saveTasks();
+            }
+        };
+        
+        var deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.onclick = function() {
+            list.removeChild(li);
+            saveTasks();
+        };
+        
+        li.appendChild(editBtn);
+        li.appendChild(deleteBtn);
+        list.appendChild(li);
+    }
+
+    function addTask() {
+        var input = document.getElementById('taskInput');
+        if (input.value.trim() !== '') {
+            createTaskElement(input.value);
+            saveTasks();
+            input.value = '';
+        }
+    }
+
+    document.getElementById('addBtn').onclick = addTask;
+</script>
+
+</body>
+</html>
